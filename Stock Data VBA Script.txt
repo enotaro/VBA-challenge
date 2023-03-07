@@ -1,0 +1,61 @@
+Sub Stocks()
+
+Dim ws As Worksheet
+
+For Each ws In Worksheets
+
+    Dim Ticker As String
+    Dim TotalStockVolume As Double
+    TotalStockVolume = 0
+    Dim YearOpen As Double
+    Dim YearClose As Double
+    Dim YearlyChange As Double
+    Dim PercentChange As Double
+    Dim SummaryTableRow As Integer
+    SummaryTableRow = 2
+    LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+
+    For I = 2 To LastRow
+        If ws.Cells(I + 1, 1).Value <> ws.Cells(I, 1).Value Then
+            Ticker = ws.Cells(I, 1).Value
+            YearClose = ws.Cells(I, 6).Value
+            TotalStockVolume = TotalStockVolume + ws.Cells(I, 7).Value
+            ws.Range("I" & SummaryTableRow).Value = Ticker
+            ws.Range("L" & SummaryTableRow).Value = TotalStockVolume
+            YearlyChange = YearClose - YearOpen
+            ws.Range("J" & SummaryTableRow).Value = YearlyChange
+            PercentChange = (YearlyChange / YearOpen) * 100
+            ws.Range("K" & SummaryTableRow).Value = PercentChange
+            SummaryTableRow = SummaryTableRow + 1
+            TotalStockVolume = 0
+        Else
+            TotalStockVolume = TotalStockVolume + ws.Cells(I, 7).Value
+            If ws.Cells(I, 2).Value = "20200102" Or ws.Cells(I, 2).Value = "20190102" Or ws.Cells(I, 2).Value = "20180102" Then
+            YearOpen = ws.Cells(I, 3).Value
+            End If
+        End If
+        
+    Next I
+    
+    For I = 2 To LastRow
+    
+        If ws.Cells(I, 11).Value = Application.WorksheetFunction.Max(ws.Range("K2:K" & LastRow)) Then
+            ws.Cells(2, 16).Value = ws.Cells(I, 9).Value
+            ws.Cells(2, 17).Value = ws.Cells(I, 11).Value
+        End If
+    
+        If ws.Cells(I, 11).Value = Application.WorksheetFunction.Min(ws.Range("K2:K" & LastRow)) Then
+            ws.Cells(3, 16).Value = ws.Cells(I, 9).Value
+            ws.Cells(3, 17).Value = ws.Cells(I, 11).Value
+        End If
+    
+        If ws.Cells(I, 12).Value = Application.WorksheetFunction.Max(ws.Range("L2:L" & LastRow)) Then
+            ws.Cells(4, 16).Value = ws.Cells(I, 9).Value
+            ws.Cells(4, 17).Value = ws.Cells(I, 12).Value
+        End If
+    
+    Next I
+
+Next ws
+
+End Sub
